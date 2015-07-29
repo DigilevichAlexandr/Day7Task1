@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Day7Task1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var countdowner = new Countdown();
+            var fax = new FirstAwaiting(countdowner);
+            var pager = new SecondAwaiting();
+            pager.Register(countdowner);
+            countdowner.ActivateCountdown(3);
+
+            fax.Unregister(countdowner);
+            Console.WriteLine();
+            countdowner.ActivateCountdown(5);
+            Console.WriteLine("press enter");
+            Console.ReadKey();
+
+        }
+    }
+}
