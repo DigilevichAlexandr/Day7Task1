@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+
+namespace Day7Task1
+{
+#region NewCountdownEventArgs
+    internal sealed class NewCountdownEventArgs:EventArgs
+    {
+        private readonly string message;
+        private readonly int seconds_pass;
+        public NewCountdownEventArgs(string m,int s)
+        {
+            message = m;
+            seconds_pass =s;
+        }
+
+        public string Message { get { return message; } }
+        public int Seconds { get { return seconds_pass; } }
+    }
+#endregion
+#region Countdown
+    class Countdown
+    {
+        public delegate void NewCountdownEventHendler(object sender,NewCountdownEventArgs e);
+
+        public event NewCountdownEventHendler NewMessage;
+
+        protected virtual void OnCountdown(object sender,NewCountdownEventArgs e)
+        {
+            if (NewMessage != null)
+            {
+                NewMessage(sender,e);
+            }
+        }
+        public void ActivateCountdown(int seconds)
+        {
+            Console.WriteLine("wait !.. ");
+            Thread.Sleep(1000*seconds);
+            OnCountdown(this,new NewCountdownEventArgs("Counting is over after",seconds));
+        }
+    }
+#endregion
+#region Listners
+    sealed class FirstAwaiting
+    {
+        public FirstAwaiting(Countdown c)
+        {
+            c.NewMessage += FirstKindMessage;
+        }
+
+        public void Register(Countdown c)
+        {
+            c.NewMessage += FirstKindMessage;
+        }
+
+        private void FirstKindMessage(Object sender, NewCountdownEventArgs eventArgs)
+        {
+            Console.WriteLine("Faxing FirstKind message:");
+            Console.WriteLine("{0} {1} sec", eventArgs.Message, eventArgs.Seconds.ToString());
+        }
+
+        public void Unregister(Countdown c)
+        {
+            c.NewMessage-=FirstKindMessage;
+        }
+
+    }
+
+    sealed class SecondAwaiting
+    {
+        public void Register(Countdown c)
+        {
+            c.NewMessage += SecondKindMessage;
+        }
+
+        private void SecondKindMessage(Object sender, NewCountdownEventArgs eventArgs)
+        {
+            Console.WriteLine("Faxing SecondKind message:");
+            Console.WriteLine("{0} {1} sec", eventArgs.Message, eventArgs.Seconds.ToString());
+        }
+
+        public void Unregister(Countdown c)
+        {
+            c.NewMessage-=SecondKindMessage;
+        }
+
+    }
+#endregion
+
+
+
+}
